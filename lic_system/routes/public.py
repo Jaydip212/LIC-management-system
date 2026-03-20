@@ -12,11 +12,11 @@ def home():
     cur.execute("SELECT * FROM policies WHERE status='active' LIMIT 6")
     policies = cur.fetchall()
     cur.close()
-    return render_template('public/index.html', policies=policies)
+    return render_template('main_site/index.html', policies=policies)
 
 @public_bp.route('/about')
 def about():
-    return render_template('public/about.html')
+    return render_template('main_site/about.html')
 
 @public_bp.route('/services')
 def services():
@@ -24,7 +24,7 @@ def services():
     cur.execute("SELECT * FROM policies WHERE status='active' ORDER BY policy_type")
     policies = cur.fetchall()
     cur.close()
-    return render_template('public/services.html', policies=policies)
+    return render_template('main_site/services.html', policies=policies)
 
 @public_bp.route('/contact', methods=['GET','POST'])
 def contact():
@@ -49,4 +49,4 @@ def contact():
             except Exception as e:
                 mysql.connection.rollback(); cur.close()
                 flash('Error sending message. Please try again.', 'danger')
-    return render_template('public/contact.html')
+    return render_template('main_site/contact.html')

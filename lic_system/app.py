@@ -135,7 +135,7 @@ app.register_blueprint(public_bp)
 @app.errorhandler(404)
 def not_found(e):
     try:
-        return render_template('public/404.html'), 404
+        return render_template('main_site/404.html'), 404
     except Exception:
         return "404 Not Found", 404
 
@@ -162,7 +162,7 @@ def server_error(e):
         diag += f"\nDIAG ERROR: {e}"
 
     try:
-        return render_template('public/500.html'), 500
+        return render_template('main_site/500.html'), 500
     except Exception as template_err:
         return f"500 Internal Server Error<br><br>Original Error:<pre>{error_info}</pre><br>Template Error: {template_err}<br><br><pre>{diag}</pre>", 500
 
