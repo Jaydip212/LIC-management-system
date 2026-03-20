@@ -1,6 +1,7 @@
 import pymysql
 import pymysql.cursors
 import os
+# Dependencies for LIC Management System
 from flask import g, current_app, session, flash, redirect, url_for
 from functools import wraps
 

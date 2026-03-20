@@ -17,7 +17,7 @@ class Config:
     MYSQL_DB       = os.environ.get('MYSQL_DB',       'lic_management')
     MYSQL_PORT     = int(os.environ.get('MYSQL_PORT', 3306))
     MYSQL_CURSORCLASS = 'DictCursor'
-    MYSQL_CA_PATH     = os.environ.get('MYSQL_CA_PATH')
+    MYSQL_CA_PATH     = os.environ.get('MYSQL_CA_PATH', '')
 
     # ------- Upload -------
     UPLOAD_FOLDER    = os.path.join(os.path.dirname(__file__), 'static', 'uploads')
@@ -29,7 +29,7 @@ class Config:
 
 class ProductionConfig(Config):
     DEBUG = False
-    SECRET_KEY = os.environ.get('SECRET_KEY')  # Must be set in production env
+    SECRET_KEY = os.environ.get('SECRET_KEY', Config.SECRET_KEY)  # Must be set in production env
     # For Aiven on Vercel, we might need a workaround for CA file
     MYSQL_CA_PATH = os.environ.get('MYSQL_CA_PATH', os.path.join(os.path.dirname(__file__), 'ca.pem'))
 
