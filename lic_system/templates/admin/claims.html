@@ -1,0 +1,43 @@
+{% extends "admin/base.html" %}
+{% block title %}Claims{% endblock %}
+{% block breadcrumb %} / <span>Claims</span>{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><h1 class="page-title">Claim Management</h1><p class="page-subtitle">{{ total }} claim(s)</p></div>
+  <a href="{{ url_for('claims.add') }}" class="btn btn-primary"><i class="fas fa-plus"></i> New Claim</a>
+</div>
+<div class="filter-bar"><form method="GET" class="filter-form">
+  <div class="search-box"><i class="fas fa-search"></i><input type="text" name="q" value="{{ q }}" placeholder="Search by customer or claim code..." class="form-control"/></div>
+  <select name="status" class="form-control form-select">
+    <option value="">All Status</option>
+    {% for s in ['pending','approved','rejected','under_review'] %}
+    <option value="{{ s }}" {% if status==s %}selected{% endif %}>{{ s | replace('_',' ') | title }}</option>{% endfor %}
+  </select>
+  <button type="submit" class="btn btn-primary"><i class="fas fa-filter"></i> Filter</button>
+  {% if q or status %}<a href="{{ url_for('claims.index') }}" class="btn btn-outline">Clear</a>{% endif %}
+</form></div>
+<div class="card"><div class="card-body p-0">
+  {% if claims %}
+  <div class="table-responsive"><table class="table table-hover">
+    <thead><tr><th>Code</th><th>Customer</th><th>Policy</th><th>Type</th><th>Amount</th><th>Claim Date</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>
+    {% for c in claims %}
+    <tr>
+      <td><code class="code-badge">{{ c.claim_code }}</code></td>
+      <td>{{ c.full_name }}<br/><small class="text-muted">{{ c.customer_code }}</small></td>
+      <td>{{ c.policy_name }}</td>
+      <td><span class="badge-tiny">{{ c.claim_type | title }}</span></td>
+      <td><strong>₹{{ "{:,.0f}".format(c.claim_amount) }}</strong></td>
+      <td>{{ c.claim_date.strftime('%d %b %Y') if c.claim_date else '—' }}</td>
+      <td><span class="badge badge-{{ c.status }}">{{ c.status | replace('_',' ') | title }}</span></td>
+      <td><div class="action-btns">
+        <a href="{{ url_for('claims.edit', cid=c.id) }}" class="btn-icon btn-icon-green"><i class="fas fa-edit"></i></a>
+        <form method="POST" action="{{ url_for('claims.delete', cid=c.id) }}" class="d-inline" onsubmit="return confirm('Delete this claim?')"><button class="btn-icon btn-icon-red"><i class="fas fa-trash"></i></button></form>
+      </div></td>
+    </tr>{% endfor %}
+    </tbody>
+  </table></div>
+  {% if pages > 1 %}<div class="pagination-bar">{% for p in range(1,pages+1) %}<a href="?page={{ p }}&q={{ q }}&status={{ status }}" class="page-btn {% if p==page %}active{% endif %}">{{ p }}</a>{% endfor %}</div>{% endif %}
+  {% else %}<div class="empty-state"><i class="fas fa-hand-holding-medical"></i><h3>No claims found</h3><a href="{{ url_for('claims.add') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Add Claim</a></div>{% endif %}
+</div></div>
+{% endblock %}

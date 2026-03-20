@@ -1,0 +1,59 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ 'Edit' if policy else 'Add' }} Policy{% endblock %}
+{% block breadcrumb %} / <a href="{{ url_for('policies.index') }}">Policies</a> / <span>{{ 'Edit' if policy else 'Add' }}</span>{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">{{ 'Edit Policy' if policy else 'Add New Policy' }}</h1>
+  <a href="{{ url_for('policies.index') }}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back</a>
+</div>
+<form method="POST" class="form-card" novalidate>
+  <div class="form-section">
+    <h4 class="form-section-title"><i class="fas fa-file-shield"></i> Policy Information</h4>
+    <div class="form-grid-2">
+      <div class="form-group">
+        <label>Policy Name *</label>
+        <input type="text" name="policy_name" class="form-control" value="{{ policy.policy_name if policy else '' }}" required/>
+      </div>
+      <div class="form-group">
+        <label>Policy Type *</label>
+        <select name="policy_type" class="form-control" required>
+          {% for t in ['life','health','term','endowment','ulip','pension','child','vehicle'] %}
+          <option value="{{ t }}" {% if policy and policy.policy_type==t %}selected{% endif %}>{{ t | capitalize }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Coverage Amount (₹) *</label>
+        <input type="number" name="coverage_amount" class="form-control" step="0.01" value="{{ policy.coverage_amount if policy else '' }}" required/>
+      </div>
+      <div class="form-group">
+        <label>Annual Premium Amount (₹) *</label>
+        <input type="number" name="premium_amount" class="form-control" step="0.01" value="{{ policy.premium_amount if policy else '' }}" required/>
+      </div>
+      <div class="form-group">
+        <label>Duration (Years) *</label>
+        <input type="number" name="duration_years" class="form-control" min="1" max="100" value="{{ policy.duration_years if policy else '' }}" required/>
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select name="status" class="form-control">
+          <option value="active" {% if not policy or policy.status=='active' %}selected{% endif %}>Active</option>
+          <option value="inactive" {% if policy and policy.status=='inactive' %}selected{% endif %}>Inactive</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Benefits (comma separated)</label>
+      <input type="text" name="benefits" class="form-control" value="{{ policy.benefits if policy else '' }}" placeholder="Death benefit, Maturity benefit, Tax benefit"/>
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <textarea name="description" class="form-control" rows="3">{{ policy.description if policy else '' }}</textarea>
+    </div>
+  </div>
+  <div class="form-actions">
+    <a href="{{ url_for('policies.index') }}" class="btn btn-outline">Cancel</a>
+    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> {{ 'Update' if policy else 'Add' }} Policy</button>
+  </div>
+</form>
+{% endblock %}

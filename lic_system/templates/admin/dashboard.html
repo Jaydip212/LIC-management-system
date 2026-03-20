@@ -1,0 +1,207 @@
+{% extends "admin/base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block breadcrumb %} / <span>Dashboard</span>{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Dashboard Overview</h1>
+    <p class="page-subtitle">Welcome back, {{ session.get('admin_name','Administrator') }}! Here's what's happening today.</p>
+  </div>
+  <div class="page-actions">
+    <span class="update-time"><i class="fas fa-clock"></i> Last updated: just now</span>
+  </div>
+</div>
+
+<!-- ── KPI Cards ── -->
+<div class="kpi-grid">
+  <div class="kpi-card kpi-blue">
+    <div class="kpi-icon"><i class="fas fa-users"></i></div>
+    <div class="kpi-info">
+      <div class="kpi-num">{{ total_customers }}</div>
+      <div class="kpi-label">Active Customers</div>
+    </div>
+    <a href="{{ url_for('customers.index') }}" class="kpi-link">View all <i class="fas fa-arrow-right"></i></a>
+  </div>
+  <div class="kpi-card kpi-green">
+    <div class="kpi-icon"><i class="fas fa-file-shield"></i></div>
+    <div class="kpi-info">
+      <div class="kpi-num">{{ total_policies }}</div>
+      <div class="kpi-label">Active Policies</div>
+    </div>
+    <a href="{{ url_for('policies.index') }}" class="kpi-link">View all <i class="fas fa-arrow-right"></i></a>
+  </div>
+  <div class="kpi-card kpi-purple">
+    <div class="kpi-icon"><i class="fas fa-rupee-sign"></i></div>
+    <div class="kpi-info">
+      <div class="kpi-num">₹{{ "{:,.0f}".format(total_collected) }}</div>
+      <div class="kpi-label">Total Collected</div>
+    </div>
+    <a href="{{ url_for('payments.index') }}" class="kpi-link">View all <i class="fas fa-arrow-right"></i></a>
+  </div>
+  <div class="kpi-card kpi-orange">
+    <div class="kpi-icon"><i class="fas fa-user-tie"></i></div>
+    <div class="kpi-info">
+      <div class="kpi-num">{{ total_agents }}</div>
+      <div class="kpi-label">Active Agents</div>
+    </div>
+    <a href="{{ url_for('agents.index') }}" class="kpi-link">View all <i class="fas fa-arrow-right"></i></a>
+  </div>
+</div>
+
+<!-- ── Status Cards Row ── -->
+<div class="status-cards">
+  <div class="status-card status-yellow">
+    <i class="fas fa-clock"></i>
+    <div>
+      <div class="status-num">{{ pending_payments }}</div>
+      <div class="status-label">Pending Payments</div>
+    </div>
+  </div>
+  <div class="status-card status-red">
+    <i class="fas fa-exclamation-triangle"></i>
+    <div>
+      <div class="status-num">{{ overdue_payments }}</div>
+      <div class="status-label">Overdue Payments</div>
+    </div>
+  </div>
+  <div class="status-card status-blue">
+    <i class="fas fa-hand-holding-medical"></i>
+    <div>
+      <div class="status-num">{{ pending_claims }}</div>
+      <div class="status-label">Pending Claims</div>
+    </div>
+  </div>
+  <div class="status-card status-purple">
+    <i class="fas fa-envelope"></i>
+    <div>
+      <div class="status-num">{{ unread_messages }}</div>
+      <div class="status-label">Unread Messages</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Charts + Recent Tables ── -->
+<div class="dashboard-grid">
+  <!-- Chart -->
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title"><i class="fas fa-chart-bar"></i> Monthly Premium Collection</h3>
+    </div>
+    <div class="card-body">
+      <canvas id="premiumChart" height="120"></canvas>
+    </div>
+  </div>
+
+  <!-- Recent Claims -->
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title"><i class="fas fa-hand-holding-medical"></i> Recent Claims</h3>
+      <a href="{{ url_for('claims.index') }}" class="card-link">View All</a>
+    </div>
+    <div class="card-body p-0">
+      <table class="table table-sm">
+        <thead><tr><th>Claim ID</th><th>Customer</th><th>Amount</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for cl in recent_claims %}
+          <tr>
+            <td><code>{{ cl.claim_code }}</code></td>
+            <td>{{ cl.full_name }}</td>
+            <td>₹{{ "{:,.0f}".format(cl.claim_amount) }}</td>
+            <td><span class="badge badge-{{ cl.status }}">{{ cl.status | replace('_',' ') | title }}</span></td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4" class="text-center text-muted">No claims yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Recent Customers -->
+  <div class="card col-span-2">
+    <div class="card-header">
+      <h3 class="card-title"><i class="fas fa-users"></i> Recent Customers</h3>
+      <a href="{{ url_for('customers.index') }}" class="card-link">View All</a>
+    </div>
+    <div class="card-body p-0">
+      <table class="table">
+        <thead><tr><th>Code</th><th>Name</th><th>Mobile</th><th>Policy</th><th>Status</th><th>Joined</th></tr></thead>
+        <tbody>
+          {% for c in recent_customers %}
+          <tr>
+            <td><code>{{ c.customer_code }}</code></td>
+            <td><strong>{{ c.full_name }}</strong></td>
+            <td>{{ c.mobile }}</td>
+            <td>{{ c.policy_name or '—' }}</td>
+            <td><span class="badge badge-{{ c.status }}">{{ c.status | title }}</span></td>
+            <td>{{ c.created_at.strftime('%d %b %Y') if c.created_at else '—' }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" class="text-center text-muted">No customers yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Recent Payments -->
+  <div class="card col-span-2">
+    <div class="card-header">
+      <h3 class="card-title"><i class="fas fa-credit-card"></i> Recent Payments</h3>
+      <a href="{{ url_for('payments.index') }}" class="card-link">View All</a>
+    </div>
+    <div class="card-body p-0">
+      <table class="table">
+        <thead><tr><th>Pay Code</th><th>Customer</th><th>Amount</th><th>Due Date</th><th>Mode</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for p in recent_payments %}
+          <tr>
+            <td><code>{{ p.payment_code }}</code></td>
+            <td>{{ p.full_name }}</td>
+            <td>₹{{ "{:,.0f}".format(p.amount) }}</td>
+            <td>{{ p.due_date.strftime('%d %b %Y') if p.due_date else '—' }}</td>
+            <td><span class="tag">{{ p.payment_mode | upper }}</span></td>
+            <td><span class="badge badge-{{ p.status }}">{{ p.status | title }}</span></td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" class="text-center text-muted">No payments yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+const monthlyData = {{ monthly_data | tojson }};
+const labels = monthlyData.map(d => d.month);
+const data   = monthlyData.map(d => parseFloat(d.total || 0));
+const ctx = document.getElementById('premiumChart').getContext('2d');
+new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: labels.length ? labels : ['No Data'],
+    datasets: [{
+      label: 'Premium Collected (₹)',
+      data: data.length ? data : [0],
+      backgroundColor: 'rgba(99,102,241,0.8)',
+      borderRadius: 8,
+      borderSkipped: false,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false }, tooltip: {
+      callbacks: { label: ctx => '₹' + ctx.parsed.y.toLocaleString('en-IN') }
+    }},
+    scales: {
+      y: { beginAtZero: true, ticks: { callback: v => '₹' + v.toLocaleString('en-IN') }, grid: { color: 'rgba(255,255,255,0.05)' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+</script>
+{% endblock %}

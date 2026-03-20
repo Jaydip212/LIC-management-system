@@ -1,0 +1,89 @@
+{% extends "admin/base.html" %}
+{% block title %}Reports & Analytics{% endblock %}
+{% block breadcrumb %} / <span>Reports</span>{% endblock %}
+{% block content %}
+<div class="page-header"><h1 class="page-title">Reports & Analytics</h1><p class="page-subtitle">Business intelligence overview</p></div>
+<div class="dashboard-grid">
+  <!-- Monthly Collection Chart -->
+  <div class="card col-span-2">
+    <div class="card-header"><h3 class="card-title"><i class="fas fa-chart-bar"></i> Monthly Premium Collection (Last 12 Months)</h3></div>
+    <div class="card-body"><canvas id="monthlyChart" height="100"></canvas></div>
+  </div>
+  <!-- Policy Distribution -->
+  <div class="card">
+    <div class="card-header"><h3 class="card-title"><i class="fas fa-chart-pie"></i> Policy Type Distribution</h3></div>
+    <div class="card-body"><canvas id="policyChart" height="200"></canvas></div>
+  </div>
+  <!-- Payment Summary -->
+  <div class="card">
+    <div class="card-header"><h3 class="card-title"><i class="fas fa-wallet"></i> Payment Status Summary</h3></div>
+    <div class="card-body p-0">
+      <table class="table">
+        <thead><tr><th>Status</th><th>Count</th><th>Total Amount</th></tr></thead>
+        <tbody>{% for p in payment_summary %}<tr>
+          <td><span class="badge badge-{{ p.status }}">{{ p.status | title }}</span></td>
+          <td>{{ p.c }}</td>
+          <td>₹{{ "{:,.0f}".format(p.s) }}</td>
+        </tr>{% else %}<tr><td colspan="3" class="text-center text-muted">No data</td></tr>{% endfor %}</tbody>
+      </table>
+    </div>
+  </div>
+  <!-- Claims Summary -->
+  <div class="card">
+    <div class="card-header"><h3 class="card-title"><i class="fas fa-hand-holding-medical"></i> Claim Status Summary</h3></div>
+    <div class="card-body p-0">
+      <table class="table">
+        <thead><tr><th>Status</th><th>Count</th><th>Total Amount</th></tr></thead>
+        <tbody>{% for c in claims_summary %}<tr>
+          <td><span class="badge badge-{{ c.status }}">{{ c.status | replace('_',' ') | title }}</span></td>
+          <td>{{ c.cnt }}</td>
+          <td>₹{{ "{:,.0f}".format(c.total) }}</td>
+        </tr>{% else %}<tr><td colspan="3" class="text-center text-muted">No data</td></tr>{% endfor %}</tbody>
+      </table>
+    </div>
+  </div>
+  <!-- Top Agents -->
+  <div class="card col-span-2">
+    <div class="card-header"><h3 class="card-title"><i class="fas fa-trophy"></i> Top Performing Agents</h3></div>
+    <div class="card-body p-0">
+      <table class="table">
+        <thead><tr><th>Rank</th><th>Agent</th><th>Code</th><th>Customers</th><th>Premium Collected</th></tr></thead>
+        <tbody>{% for i, a in enumerate(top_agents) %}<tr>
+          <td><span class="rank-badge rank-{{ i+1 }}">{{ i+1 }}</span></td>
+          <td><strong>{{ a.full_name }}</strong></td>
+          <td><code class="code-badge">{{ a.agent_code }}</code></td>
+          <td>{{ a.customers }}</td>
+          <td>₹{{ "{:,.0f}".format(a.total_premium or 0) }}</td>
+        </tr>{% else %}<tr><td colspan="5" class="text-center text-muted">No data</td></tr>{% endfor %}</tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+const monthlyData = {{ monthly_premium | tojson }};
+const policyData  = {{ policy_dist | tojson }};
+// Monthly bar chart
+new Chart(document.getElementById('monthlyChart'), {
+  type: 'bar',
+  data: {
+    labels: monthlyData.map(d=>d.month),
+    datasets: [{label:'Premium (₹)',data: monthlyData.map(d=>parseFloat(d.total||0)),backgroundColor:'rgba(99,102,241,0.8)',borderRadius:8}]
+  },
+  options: { responsive:true, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true,ticks:{callback:v=>'₹'+v.toLocaleString('en-IN')}},x:{grid:{display:false}}} }
+});
+// Pie chart
+const colors = ['#6366f1','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899','#14b8a6'];
+new Chart(document.getElementById('policyChart'), {
+  type: 'doughnut',
+  data: {
+    labels: policyData.map(d=>d.policy_type.charAt(0).toUpperCase()+d.policy_type.slice(1)),
+    datasets: [{data: policyData.map(d=>d.customer_count), backgroundColor: colors.slice(0,policyData.length), borderWidth:2, borderColor:'#1e1e2e'}]
+  },
+  options: { responsive:true, plugins:{legend:{position:'right'}} }
+});
+// Jinja enumerate hack
+</script>
+{% endblock %}

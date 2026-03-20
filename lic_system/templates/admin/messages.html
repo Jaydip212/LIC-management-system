@@ -1,0 +1,34 @@
+{% extends "admin/base.html" %}
+{% block title %}Messages{% endblock %}
+{% block breadcrumb %} / <span>Messages</span>{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><h1 class="page-title">Contact Messages</h1><p class="page-subtitle">{{ total }} message(s) from website visitors</p></div>
+</div>
+<div class="filter-bar"><form method="GET" class="filter-form"><div class="search-box"><i class="fas fa-search"></i><input type="text" name="q" value="{{ q }}" placeholder="Search by name, email, or subject..." class="form-control"/></div><button type="submit" class="btn btn-primary"><i class="fas fa-filter"></i> Search</button>{% if q %}<a href="{{ url_for('messages.index') }}" class="btn btn-outline">Clear</a>{% endif %}</form></div>
+<div class="card"><div class="card-body p-0">
+  {% if msgs %}
+  <div class="table-responsive"><table class="table table-hover">
+    <thead><tr><th>From</th><th>Subject</th><th>Phone</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>
+    {% for m in msgs %}
+    <tr class="{% if not m.is_read %}row-unread{% endif %}">
+      <td><div class="cell-with-sub"><strong>{{ m.name }}</strong><span>{{ m.email }}</span></div></td>
+      <td>
+        <div>{{ m.subject or 'General Enquiry' }}</div>
+        <div class="msg-preview">{{ m.message | truncate(80) }}</div>
+      </td>
+      <td>{{ m.phone or '—' }}</td>
+      <td>{{ m.created_at.strftime('%d %b %Y') if m.created_at else '—' }}</td>
+      <td>{% if m.is_read %}<span class="badge badge-active">Read</span>{% else %}<span class="badge badge-pending"><i class="fas fa-circle" style="font-size:8px"></i> Unread</span>{% endif %}</td>
+      <td><div class="action-btns">
+        {% if not m.is_read %}<a href="{{ url_for('messages.mark_read', mid=m.id) }}" class="btn-icon btn-icon-blue" title="Mark as read"><i class="fas fa-check"></i></a>{% endif %}
+        <form method="POST" action="{{ url_for('messages.delete', mid=m.id) }}" class="d-inline" onsubmit="return confirm('Delete this message?')"><button class="btn-icon btn-icon-red"><i class="fas fa-trash"></i></button></form>
+      </div></td>
+    </tr>{% endfor %}
+    </tbody>
+  </table></div>
+  {% if pages > 1 %}<div class="pagination-bar">{% for p in range(1,pages+1) %}<a href="?page={{ p }}&q={{ q }}" class="page-btn {% if p==page %}active{% endif %}">{{ p }}</a>{% endfor %}</div>{% endif %}
+  {% else %}<div class="empty-state"><i class="fas fa-envelope-open"></i><h3>No messages yet</h3><p>All contact form submissions will appear here.</p></div>{% endif %}
+</div></div>
+{% endblock %}

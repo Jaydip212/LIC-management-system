@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Admin Panel{% endblock %} – LICMS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}"/>
+  {% block extra_css %}{% endblock %}
+</head>
+<body class="admin-body">
+
+<!-- ───── Sidebar ───── -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-brand">
+      <div class="sb-icon"><i class="fas fa-shield-heart"></i></div>
+      <div class="sb-text">
+        <span class="sb-name">LIC<b>MS</b></span>
+        <span class="sb-sub">Admin Panel</span>
+      </div>
+    </div>
+    <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+
+  <!-- Search -->
+  <div class="sidebar-search">
+    <i class="fas fa-search"></i>
+    <input type="text" placeholder="Quick search..." id="sidebarSearch"/>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <a href="{{ url_for('dashboard.index') }}" class="sidebar-link {% if request.endpoint=='dashboard.index' %}active{% endif %}">
+      <i class="fas fa-th-large"></i><span>Dashboard</span>
+    </a>
+
+    <div class="nav-section-label">Management</div>
+    <a href="{{ url_for('customers.index') }}" class="sidebar-link {% if 'customers' in request.endpoint %}active{% endif %}">
+      <i class="fas fa-users"></i><span>Customers</span>
+    </a>
+    <a href="{{ url_for('policies.index') }}" class="sidebar-link {% if 'policies' in request.endpoint %}active{% endif %}">
+      <i class="fas fa-file-shield"></i><span>Policies</span>
+    </a>
+    <a href="{{ url_for('payments.index') }}" class="sidebar-link {% if 'payments' in request.endpoint %}active{% endif %}">
+      <i class="fas fa-credit-card"></i><span>Payments</span>
+    </a>
+    <a href="{{ url_for('agents.index') }}" class="sidebar-link {% if 'agents' in request.endpoint %}active{% endif %}">
+      <i class="fas fa-user-tie"></i><span>Agents</span>
+    </a>
+    <a href="{{ url_for('claims.index') }}" class="sidebar-link {% if 'claims' in request.endpoint %}active{% endif %}">
+      <i class="fas fa-hand-holding-medical"></i><span>Claims</span>
+    </a>
+
+    <div class="nav-section-label">Communication</div>
+    <a href="{{ url_for('messages.index') }}" class="sidebar-link {% if 'messages' in request.endpoint %}active{% endif %}">
+      <i class="fas fa-envelope"></i>
+      <span>Messages</span>
+      {% if unread_messages > 0 %}
+        <span class="badge-count">{{ unread_messages }}</span>
+      {% endif %}
+    </a>
+
+    <div class="nav-section-label">Analytics</div>
+    <a href="{{ url_for('reports.index') }}" class="sidebar-link {% if 'reports' in request.endpoint %}active{% endif %}">
+      <i class="fas fa-chart-bar"></i><span>Reports</span>
+    </a>
+    <a href="{{ url_for('public.home') }}" class="sidebar-link" target="_blank">
+      <i class="fas fa-globe"></i><span>View Website</span>
+      <i class="fas fa-external-link-alt ms-auto small-icon"></i>
+    </a>
+
+    <div class="nav-section-label">Account</div>
+    <a href="{{ url_for('auth.logout') }}" class="sidebar-link sidebar-logout">
+      <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="admin-info">
+      <div class="admin-avatar">{{ session.get('admin_name','A')[:1] }}</div>
+      <div>
+        <strong>{{ session.get('admin_name','Admin') }}</strong>
+        <span>{{ session.get('admin_role','admin') | replace('_',' ') | title }}</span>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ───── Main Wrapper ───── -->
+<div class="admin-main" id="adminMain">
+  <!-- Topbar -->
+  <header class="topbar">
+    <button class="topbar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+      <i class="fas fa-bars"></i>
+    </button>
+    <div class="topbar-breadcrumb">
+      <a href="{{ url_for('dashboard.index') }}">Dashboard</a>
+      {% block breadcrumb %}{% endblock %}
+    </div>
+    <div class="topbar-right">
+      <a href="{{ url_for('messages.index') }}" class="topbar-icon" title="Messages">
+        <i class="fas fa-bell"></i>
+        {% if unread_messages > 0 %}<span class="topbar-badge">{{ unread_messages }}</span>{% endif %}
+      </a>
+      <a href="{{ url_for('public.home') }}" class="topbar-icon" title="View website" target="_blank">
+        <i class="fas fa-globe"></i>
+      </a>
+      <div class="topbar-divider"></div>
+      <div class="topbar-user">
+        <div class="tu-avatar">{{ session.get('admin_name','A')[:1] }}</div>
+        <div class="tu-info">
+          <strong>{{ session.get('admin_name','Administrator') }}</strong>
+          <span>{{ session.get('admin_role','admin') | replace('_',' ') | title }}</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Flash messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-wrapper">
+        {% for cat, msg in messages %}
+          <div class="flash-alert flash-{{ cat }}">
+            <i class="fas {% if cat=='success' %}fa-check-circle{% elif cat=='danger' %}fa-exclamation-circle{% elif cat=='warning' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %}"></i>
+            {{ msg }}
+            <button onclick="this.parentElement.remove()" class="flash-close"><i class="fas fa-times"></i></button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Page content -->
+  <main class="admin-content">
+    {% block content %}{% endblock %}
+  </main>
+</div>
+
+<!-- Overlay for mobile -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,67 @@
+{% extends "admin/base.html" %}
+{% block title %}Payments{% endblock %}
+{% block breadcrumb %} / <span>Payments</span>{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><h1 class="page-title">Premium Payment Management</h1><p class="page-subtitle">{{ total }} payment record(s)</p></div>
+  <a href="{{ url_for('payments.add') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Add Payment</a>
+</div>
+
+<!-- Summary cards -->
+<div class="kpi-grid kpi-grid-3">
+  <div class="kpi-card kpi-green"><div class="kpi-icon"><i class="fas fa-check-circle"></i></div><div class="kpi-info"><div class="kpi-num">₹{{ "{:,.0f}".format(paid_total) }}</div><div class="kpi-label">Total Collected</div></div></div>
+  <div class="kpi-card kpi-yellow"><div class="kpi-icon"><i class="fas fa-clock"></i></div><div class="kpi-info"><div class="kpi-num">{{ total }}</div><div class="kpi-label">Total Records</div></div></div>
+  <div class="kpi-card kpi-red"><div class="kpi-icon"><i class="fas fa-exclamation-triangle"></i></div><div class="kpi-info"><div class="kpi-num">{{ overdue_count }}</div><div class="kpi-label">Overdue</div></div></div>
+</div>
+
+<div class="filter-bar">
+  <form method="GET" class="filter-form">
+    <div class="search-box"><i class="fas fa-search"></i><input type="text" name="q" value="{{ q }}" placeholder="Search by customer or payment code..." class="form-control"/></div>
+    <select name="status" class="form-control form-select">
+      <option value="">All Status</option>
+      <option value="paid" {% if status=='paid' %}selected{% endif %}>Paid</option>
+      <option value="pending" {% if status=='pending' %}selected{% endif %}>Pending</option>
+      <option value="overdue" {% if status=='overdue' %}selected{% endif %}>Overdue</option>
+    </select>
+    <button type="submit" class="btn btn-primary"><i class="fas fa-filter"></i> Filter</button>
+    {% if q or status %}<a href="{{ url_for('payments.index') }}" class="btn btn-outline">Clear</a>{% endif %}
+  </form>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    {% if payments %}
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead><tr><th>Code</th><th>Customer</th><th>Policy</th><th>Amount</th><th>Due Date</th><th>Paid Date</th><th>Mode</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+          {% for p in payments %}
+          <tr>
+            <td><code class="code-badge">{{ p.payment_code }}</code></td>
+            <td><div class="cell-with-sub"><strong>{{ p.full_name }}</strong><span>{{ p.customer_code }}</span></div></td>
+            <td>{{ p.policy_name }}</td>
+            <td><strong>₹{{ "{:,.0f}".format(p.amount) }}</strong></td>
+            <td>{{ p.due_date.strftime('%d %b %Y') if p.due_date else '—' }}</td>
+            <td>{{ p.payment_date.strftime('%d %b %Y') if p.payment_date else '—' }}</td>
+            <td><span class="tag">{{ (p.payment_mode or '').upper() }}</span></td>
+            <td><span class="badge badge-{{ p.status }}">{{ p.status | title }}</span></td>
+            <td>
+              <div class="action-btns">
+                <a href="{{ url_for('payments.edit', pid=p.id) }}" class="btn-icon btn-icon-green" title="Edit"><i class="fas fa-edit"></i></a>
+                <form method="POST" action="{{ url_for('payments.delete', pid=p.id) }}" class="d-inline" onsubmit="return confirm('Delete this payment record?')">
+                  <button class="btn-icon btn-icon-red"><i class="fas fa-trash"></i></button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% if pages > 1 %}<div class="pagination-bar">{% for p in range(1,pages+1) %}<a href="?page={{ p }}&q={{ q }}&status={{ status }}" class="page-btn {% if p==page %}active{% endif %}">{{ p }}</a>{% endfor %}</div>{% endif %}
+    {% else %}
+    <div class="empty-state"><i class="fas fa-credit-card"></i><h3>No payment records</h3><a href="{{ url_for('payments.add') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Add Payment</a></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'public/base.html' %}
+{% block title %}Server Error - LIC Management System{% endblock %}
+
+{% block content %}
+<section class="py-5 text-center mt-5">
+    <div class="container mt-5">
+        <h1 class="display-1 text-danger fw-bold">500</h1>
+        <h2 class="mb-4">Internal Server Error</h2>
+        <p class="lead mb-4">Oops! Something went wrong on our end. Please try again later.</p>
+        <a href="{{ url_for('public.home') }}" class="btn btn-primary btn-lg rounded-pill px-5">Return to Homepage</a>
+    </div>
+</section>
+{% endblock %}

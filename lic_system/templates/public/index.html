@@ -1,0 +1,426 @@
+{% extends "public/base.html" %}
+{% block title %}LIC Management System – Trusted Insurance for a Secure Future{% endblock %}
+
+{% block content %}
+
+<!-- ═══════════════════════════════════════════════════════
+     HERO SECTION
+════════════════════════════════════════════════════════ -->
+<section class="hero" id="home">
+  <div class="hero-bg">
+    <div class="hero-blob hero-blob-1"></div>
+    <div class="hero-blob hero-blob-2"></div>
+    <div class="hero-particles" id="particles"></div>
+  </div>
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <i class="fas fa-award"></i>
+        <span>IRDA Certified · 25+ Years Trust · 10 Lakh+ Families Protected</span>
+      </div>
+      <h1 class="hero-title">
+        Secure Your Future<br/>
+        <span class="gradient-text">With India's Most Trusted</span><br/>
+        Insurance Platform
+      </h1>
+      <p class="hero-subtitle">
+        Comprehensive life, health, and investment insurance solutions designed for every stage of life. Transparent plans. Hassle-free claims. Dedicated support.
+      </p>
+      <div class="hero-actions">
+        <a href="{{ url_for('public.services') }}" class="btn btn-primary-hero">
+          <i class="fas fa-rocket"></i> Explore Plans
+        </a>
+        <a href="{{ url_for('public.contact') }}" class="btn btn-glass">
+          <i class="fas fa-headset"></i> Talk to an Expert
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-num" data-count="10">0</span><span>L+</span>
+          <span class="stat-label">Policyholders</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-num" data-count="98">0</span><span>%</span>
+          <span class="stat-label">Claim Settlement</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-num" data-count="25">0</span><span>+</span>
+          <span class="stat-label">Years of Trust</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-num" data-count="500">0</span><span>+</span>
+          <span class="stat-label">Expert Agents</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-card-stack">
+        <div class="floating-card card-policy">
+          <div class="fc-icon"><i class="fas fa-file-shield"></i></div>
+          <div class="fc-info">
+            <span>Jeevan Anand Plan</span>
+            <strong>₹10,00,000 Coverage</strong>
+          </div>
+          <div class="fc-badge active">Active</div>
+        </div>
+        <div class="floating-card card-payment">
+          <div class="fc-icon payment"><i class="fas fa-check-circle"></i></div>
+          <div class="fc-info">
+            <span>Premium Paid</span>
+            <strong>₹3,500 / Quarter</strong>
+          </div>
+          <div class="fc-badge paid">Paid</div>
+        </div>
+        <div class="floating-card card-claim">
+          <div class="fc-icon claim"><i class="fas fa-hand-holding-heart"></i></div>
+          <div class="fc-info">
+            <span>Claim Processed</span>
+            <strong>₹5,00,000 Settled</strong>
+          </div>
+          <div class="fc-badge done">Settled ✓</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-wave">
+    <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z" fill="var(--bg-primary)"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     TRUST LOGOS
+════════════════════════════════════════════════════════ -->
+<section class="trust-section">
+  <div class="container">
+    <p class="trust-label">Regulated & Certified By</p>
+    <div class="trust-logos">
+      <div class="trust-logo"><i class="fas fa-university"></i> IRDA India</div>
+      <div class="trust-logo"><i class="fas fa-landmark"></i> RBI Compliant</div>
+      <div class="trust-logo"><i class="fas fa-certificate"></i> ISO 9001:2015</div>
+      <div class="trust-logo"><i class="fas fa-shield-alt"></i> IRDAI 512</div>
+      <div class="trust-logo"><i class="fas fa-lock"></i> SSL Secured</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SERVICES / PLANS
+════════════════════════════════════════════════════════ -->
+<section class="section" id="services">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge">Our Products</span>
+      <h2>Comprehensive Insurance Plans</h2>
+      <p>Tailored coverage for every life stage — from your first policy to retirement protection.</p>
+    </div>
+    <div class="cards-grid plans-grid">
+      {% for pol in policies %}
+      <div class="plan-card" style="--delay: {{ loop.index0 * 0.1 }}s">
+        <div class="plan-card-header">
+          <div class="plan-icon">
+            {% if pol.policy_type == 'term' %}<i class="fas fa-umbrella"></i>
+            {% elif pol.policy_type == 'endowment' %}<i class="fas fa-coins"></i>
+            {% elif pol.policy_type == 'pension' %}<i class="fas fa-piggy-bank"></i>
+            {% elif pol.policy_type == 'child' %}<i class="fas fa-child"></i>
+            {% elif pol.policy_type == 'health' %}<i class="fas fa-heartbeat"></i>
+            {% elif pol.policy_type == 'ulip' %}<i class="fas fa-chart-line"></i>
+            {% else %}<i class="fas fa-shield-heart"></i>{% endif %}
+          </div>
+          <div class="plan-type-badge">{{ pol.policy_type | capitalize }}</div>
+        </div>
+        <h3 class="plan-name">{{ pol.policy_name }}</h3>
+        <p class="plan-desc">{{ pol.description | truncate(100) }}</p>
+        <div class="plan-details">
+          <div class="plan-detail">
+            <span>Coverage</span>
+            <strong>₹{{ "{:,.0f}".format(pol.coverage_amount) }}</strong>
+          </div>
+          <div class="plan-detail">
+            <span>Premium</span>
+            <strong>₹{{ "{:,.0f}".format(pol.premium_amount) }}/yr</strong>
+          </div>
+          <div class="plan-detail">
+            <span>Duration</span>
+            <strong>{{ pol.duration_years }} Years</strong>
+          </div>
+        </div>
+        <a href="{{ url_for('public.contact') }}" class="btn btn-plan">
+          Get a Quote <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+      {% else %}
+      <div class="empty-state-small"><i class="fas fa-folder-open"></i><p>No plans available.</p></div>
+      {% endfor %}
+    </div>
+    <div class="section-action">
+      <a href="{{ url_for('public.services') }}" class="btn btn-outline-primary">
+        View All Plans <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     HOW IT WORKS
+════════════════════════════════════════════════════════ -->
+<section class="section section-alt" id="how-it-works">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge">Simple Process</span>
+      <h2>How It Works</h2>
+      <p>Getting insured has never been easier. Four simple steps to complete peace of mind.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-number">01</div>
+        <div class="step-icon"><i class="fas fa-search"></i></div>
+        <h3>Choose a Plan</h3>
+        <p>Browse our comprehensive range of insurance plans and select one that fits your life goals and budget.</p>
+      </div>
+      <div class="step-connector"><i class="fas fa-chevron-right"></i></div>
+      <div class="step-card">
+        <div class="step-number">02</div>
+        <div class="step-icon"><i class="fas fa-user-plus"></i></div>
+        <h3>Enroll Easily</h3>
+        <p>Submit your details through our secure platform. Our agents assist you at every step of the process.</p>
+      </div>
+      <div class="step-connector"><i class="fas fa-chevron-right"></i></div>
+      <div class="step-card">
+        <div class="step-number">03</div>
+        <div class="step-icon"><i class="fas fa-credit-card"></i></div>
+        <h3>Pay Premium</h3>
+        <p>Choose flexible payment modes — annual, quarterly, or monthly. Online, UPI, or cheque — your choice.</p>
+      </div>
+      <div class="step-connector"><i class="fas fa-chevron-right"></i></div>
+      <div class="step-card">
+        <div class="step-number">04</div>
+        <div class="step-icon"><i class="fas fa-shield-check"></i></div>
+        <h3>Stay Protected</h3>
+        <p>Enjoy comprehensive coverage. File claims instantly with our dedicated team available round the clock.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     BENEFITS
+════════════════════════════════════════════════════════ -->
+<section class="section" id="benefits">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge">Why Choose Us</span>
+      <h2>Benefits That Set Us Apart</h2>
+      <p>We go beyond coverage — delivering exceptional value, speed, and trust at every touchpoint.</p>
+    </div>
+    <div class="benefits-grid">
+      <div class="benefit-card">
+        <div class="benefit-icon"><i class="fas fa-bolt"></i></div>
+        <h3>Fast Claims</h3>
+        <p>Industry-leading claim settlement in under 7 working days with our digital-first process.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon"><i class="fas fa-shield-halved"></i></div>
+        <h3>100% Secure</h3>
+        <p>Bank-grade encryption and IRDA-compliant data protection for all your personal information.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon"><i class="fas fa-headset"></i></div>
+        <h3>24/7 Support</h3>
+        <p>Our dedicated team is always available — by phone, chat, or email — whenever you need help.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon"><i class="fas fa-percent"></i></div>
+        <h3>Tax Benefits</h3>
+        <p>Save up to ₹1.5 lakh under Sec. 80C and enjoy tax-free maturity benefits under Sec. 10(10D).</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon"><i class="fas fa-map-marked-alt"></i></div>
+        <h3>Pan-India Network</h3>
+        <p>Over 500 certified agents across 28 states for on-ground assistance and policy consultation.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon"><i class="fas fa-chart-line"></i></div>
+        <h3>Guaranteed Returns</h3>
+        <p>Transparent, guaranteed maturity benefits with bonuses declared annually by our actuarial team.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     COUNTERS
+════════════════════════════════════════════════════════ -->
+<section class="counter-section">
+  <div class="container">
+    <div class="counter-grid">
+      <div class="counter-item">
+        <i class="fas fa-users counter-icon"></i>
+        <div class="counter-num" data-count="1000000">0</div>
+        <div class="counter-label">Happy Policyholders</div>
+      </div>
+      <div class="counter-item">
+        <i class="fas fa-file-contract counter-icon"></i>
+        <div class="counter-num" data-count="50">0</div>
+        <div class="counter-suffix">+</div>
+        <div class="counter-label">Insurance Products</div>
+      </div>
+      <div class="counter-item">
+        <i class="fas fa-rupee-sign counter-icon"></i>
+        <div class="counter-num" data-count="5000">0</div>
+        <div class="counter-suffix">Cr+</div>
+        <div class="counter-label">Claims Settled</div>
+      </div>
+      <div class="counter-item">
+        <i class="fas fa-user-tie counter-icon"></i>
+        <div class="counter-num" data-count="500">0</div>
+        <div class="counter-suffix">+</div>
+        <div class="counter-label">Certified Agents</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     TESTIMONIALS
+════════════════════════════════════════════════════════ -->
+<section class="section" id="testimonials">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge">Customer Stories</span>
+      <h2>Trusted by Families Across India</h2>
+      <p>Real experiences from real policyholders who found security and peace of mind with us.</p>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="testimonial-rating">
+          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+        </div>
+        <p class="testimonial-text">"The claim settlement was incredibly fast. Within 5 days of submitting documents, I received the full amount. LICMS truly cares about its customers."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">JJ</div>
+          <div>
+            <strong>Jaydip Jadhav</strong>
+            <span>Jeevan Anand Policyholder · Pune</span>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card testimonial-featured">
+        <div class="testimonial-rating">
+          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+        </div>
+        <p class="testimonial-text">"I purchased a child plan for my daughter. The agent explained everything clearly, helped with the online process, and follow-ups were excellent. Highly recommended!"</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">SC</div>
+          <div>
+            <strong>Sanika Chavan</strong>
+            <span>Child Career Plan · Mumbai</span>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-rating">
+          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+        </div>
+        <p class="testimonial-text">"After my father's unfortunate demise, the team handled everything sensitively and professionally. The death claim was settled without any hassle. God bless."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">RS</div>
+          <div>
+            <strong>Rajveer Shinde</strong>
+            <span>Term Plan Nominee · Nashik</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     FAQ
+════════════════════════════════════════════════════════ -->
+<section class="section section-alt" id="faq">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge">FAQ</span>
+      <h2>Frequently Asked Questions</h2>
+      <p>Everything you need to know about our insurance plans and services.</p>
+    </div>
+    <div class="faq-container">
+      <div class="faq-item">
+        <button class="faq-question">
+          <span>What is the free look period in a LIC policy?</span>
+          <i class="fas fa-plus faq-icon"></i>
+        </button>
+        <div class="faq-answer">
+          <p>LIC offers a free look period of 15 days (30 days for online/distance policies) from the date of receipt of the plan. During this period, you can return the policy if you are not satisfied with its terms and conditions and receive a full refund of premium paid, minus any applicable charges.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">
+          <span>How can I file a claim online?</span>
+          <i class="fas fa-plus faq-icon"></i>
+        </button>
+        <div class="faq-answer">
+          <p>Filing a claim is simple: Contact your assigned agent or call our helpline 1800-222-4567. Submit required documents (death certificate / medical bills / accident report). Our team verifies and processes the claim within 7 working days. Payment is credited directly to the nominee's bank account.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">
+          <span>What happens if I miss a premium payment?</span>
+          <i class="fas fa-plus faq-icon"></i>
+        </button>
+        <div class="faq-answer">
+          <p>If you miss a premium payment, your policy enters a grace period (30 days for monthly, 30-60 days for other modes). If payment is not made within the grace period, the policy lapses. You can revive a lapsed policy within 5 years by paying all overdue premiums with interest and submitting a health declaration.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">
+          <span>Is the maturity amount tax-free?</span>
+          <i class="fas fa-plus faq-icon"></i>
+        </button>
+        <div class="faq-answer">
+          <p>Yes! Under Section 10(10D) of the Income Tax Act, the maturity proceeds received from a life insurance policy are completely tax-free, subject to conditions (premium not exceeding 10% of sum assured for policies issued after April 1, 2012).</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">
+          <span>Can I take a loan against my LIC policy?</span>
+          <i class="fas fa-plus faq-icon"></i>
+        </button>
+        <div class="faq-answer">
+          <p>Yes, you can avail a loan up to 90% of the surrender value of your policy after it acquires paid-up value (typically after 3 years of premium payments). Loan interest is charged at a competitive rate, and unpaid interest is adjusted against the policy benefits.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     CTA SECTION
+════════════════════════════════════════════════════════ -->
+<section class="cta-section">
+  <div class="cta-bg">
+    <div class="cta-blob cta-blob-1"></div>
+    <div class="cta-blob cta-blob-2"></div>
+  </div>
+  <div class="container">
+    <div class="cta-content">
+      <h2>Ready to Secure Your Family's Future?</h2>
+      <p>Join over 10 lakh families who trust LICMS for their insurance needs. Get a personalized quote within minutes.</p>
+      <div class="cta-actions">
+        <a href="{{ url_for('public.contact') }}" class="btn btn-cta-primary">
+          <i class="fas fa-phone-alt"></i> Request Free Consultation
+        </a>
+        <a href="{{ url_for('public.services') }}" class="btn btn-cta-outline">
+          <i class="fas fa-list"></i> Browse All Plans
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

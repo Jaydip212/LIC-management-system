@@ -1,0 +1,81 @@
+{% extends "public/base.html" %}
+{% block title %}About Us – LIC Management System{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <div class="page-hero-content">
+      <span class="section-badge">Our Story</span>
+      <h1>Trusted Insurance <span class="gradient-text">Since 2000</span></h1>
+      <p>A legacy of trust, innovation, and unwavering commitment to protecting Indian families.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-content">
+        <span class="section-badge">Who We Are</span>
+        <h2>India's Premier Digital Insurance Management Platform</h2>
+        <p>Founded in 2000, the LIC Management System was established with a singular mission: to make life insurance accessible, transparent, and hassle-free for every Indian family.</p>
+        <p>Today, with over 10 lakh policyholders, 500+ certified agents across 28 states, and a claim settlement ratio of 98.6%, we are one of the most trusted insurance management platforms in the country.</p>
+        <p>Our digital-first approach combined with our pan-India ground network means you get the best of both worlds — the convenience of technology and the warmth of personal service.</p>
+        <div class="about-values">
+          <div class="value-tag"><i class="fas fa-check-circle"></i> Transparency</div>
+          <div class="value-tag"><i class="fas fa-check-circle"></i> Integrity</div>
+          <div class="value-tag"><i class="fas fa-check-circle"></i> Innovation</div>
+          <div class="value-tag"><i class="fas fa-check-circle"></i> Customer First</div>
+        </div>
+      </div>
+      <div class="about-stats">
+        <div class="about-stat-card">
+          <div class="about-stat-icon"><i class="fas fa-calendar-check"></i></div>
+          <span class="about-stat-num">25+</span>
+          <span>Years of Excellence</span>
+        </div>
+        <div class="about-stat-card">
+          <div class="about-stat-icon"><i class="fas fa-handshake"></i></div>
+          <span class="about-stat-num">98.6%</span>
+          <span>Claim Settlement Ratio</span>
+        </div>
+        <div class="about-stat-card">
+          <div class="about-stat-icon"><i class="fas fa-map-marked-alt"></i></div>
+          <span class="about-stat-num">28</span>
+          <span>States Covered</span>
+        </div>
+        <div class="about-stat-card">
+          <div class="about-stat-icon"><i class="fas fa-award"></i></div>
+          <span class="about-stat-num">50+</span>
+          <span>Industry Awards</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge">Leadership</span>
+      <h2>Our Leadership Team</h2>
+      <p>Experienced professionals with decades of insurance and financial services expertise.</p>
+    </div>
+    <div class="team-grid">
+      {% set team = [
+        {'name':'Vikram Agarwal','role':'Chairman & Managing Director','init':'VA','exp':'30+ years in Insurance'},
+        {'name':'Dr. Meena Krishnan','role':'Chief Executive Officer','init':'MK','exp':'25+ years in Finance'},
+        {'name':'Rajesh Bhatia','role':'Chief Technology Officer','init':'RB','exp':'20+ years in Fintech'},
+        {'name':'Sunita Pillai','role':'Chief Claims Officer','init':'SP','exp':'22+ years in Actuarial'},
+      ] %}
+      {% for m in team %}
+      <div class="team-card">
+        <div class="team-avatar">{{ m.init }}</div>
+        <h3>{{ m.name }}</h3>
+        <span class="team-role">{{ m.role }}</span>
+        <p class="team-exp"><i class="fas fa-briefcase"></i> {{ m.exp }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

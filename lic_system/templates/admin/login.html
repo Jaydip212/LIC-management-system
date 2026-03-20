@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Login – LIC Management System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}"/>
+</head>
+<body class="login-body">
+  <div class="login-page">
+    <!-- Left panel -->
+    <div class="login-left">
+      <div class="login-left-content">
+        <div class="login-brand">
+          <div class="login-brand-icon"><i class="fas fa-shield-heart"></i></div>
+          <div>
+            <h1>LIC<span>MS</span></h1>
+            <p>Admin Portal</p>
+          </div>
+        </div>
+        <h2>Secure Admin Access</h2>
+        <p>Manage policies, customers, claims, and analytics from one powerful dashboard.</p>
+        <div class="login-features">
+          <div class="lf-item"><i class="fas fa-check-circle"></i> Real-time analytics dashboard</div>
+          <div class="lf-item"><i class="fas fa-check-circle"></i> Complete CRUD management</div>
+          <div class="lf-item"><i class="fas fa-check-circle"></i> Premium payment tracking</div>
+          <div class="lf-item"><i class="fas fa-check-circle"></i> Claim processing workflow</div>
+        </div>
+        <div class="login-blobs">
+          <div class="lb-1"></div><div class="lb-2"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right panel – form -->
+    <div class="login-right">
+      <div class="login-form-container">
+        <div class="login-form-header">
+          <h3>Welcome Back</h3>
+          <p>Sign in to your administrator account</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for cat, msg in messages %}
+              <div class="alert alert-{{ cat }}">
+                <i class="fas fa-{% if cat=='success' %}check-circle{% elif cat=='danger' %}exclamation-circle{% elif cat=='warning' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
+                {{ msg }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('auth.login') }}" id="loginForm" novalidate>
+          <div class="form-group">
+            <label for="username">Username or Email</label>
+            <div class="input-icon-group">
+              <i class="fas fa-user"></i>
+              <input type="text" id="username" name="username" class="form-control"
+                     placeholder="admin" required/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <div class="input-icon-group">
+              <i class="fas fa-lock"></i>
+              <input type="password" id="password" name="password" class="form-control"
+                     placeholder="••••••••" required/>
+              <button type="button" class="pwd-toggle" id="pwdToggle"
+                      aria-label="Toggle password visibility">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          <div class="form-row-inline">
+            <label class="checkbox-label">
+              <input type="checkbox" name="remember"> Remember me
+            </label>
+            <a href="#" class="forgot-link">Forgot password?</a>
+          </div>
+          <button type="submit" class="btn btn-login" id="loginBtn">
+            <i class="fas fa-sign-in-alt"></i> Sign In
+          </button>
+        </form>
+
+        <div class="login-footer-note">
+          <i class="fas fa-shield-alt"></i>
+          Secured with 256-bit SSL encryption. Unauthorized access is prohibited.
+        </div>
+        <div class="login-back">
+          <a href="{{ url_for('public.home') }}"><i class="fas fa-arrow-left"></i> Back to Website</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Password show/hide
+    const toggle = document.getElementById('pwdToggle');
+    const pwd    = document.getElementById('password');
+    if (toggle && pwd) {
+      toggle.addEventListener('click', () => {
+        const icon = toggle.querySelector('i');
+        if (pwd.type === 'password') {
+          pwd.type = 'text'; icon.className = 'fas fa-eye-slash';
+        } else {
+          pwd.type = 'password'; icon.className = 'fas fa-eye';
+        }
+      });
+    }
+    // Auto-dismiss flash after 4s
+    setTimeout(() => {
+      document.querySelectorAll('.alert').forEach(a => a.style.opacity = '0');
+    }, 4000);
+  </script>
+</body>
+</html>

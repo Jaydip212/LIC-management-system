@@ -1,0 +1,98 @@
+{% extends "public/base.html" %}
+{% block title %}Insurance Plans – LIC Management System{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <div class="page-hero-content">
+      <span class="section-badge">Our Products</span>
+      <h1>All Insurance <span class="gradient-text">Plans & Services</span></h1>
+      <p>Explore our comprehensive portfolio of IRDA-certified insurance solutions designed for every life goal.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <!-- Filter tabs -->
+    <div class="filter-tabs" id="filterTabs">
+      <button class="filter-tab active" data-filter="all">All Plans</button>
+      <button class="filter-tab" data-filter="term">Term</button>
+      <button class="filter-tab" data-filter="endowment">Endowment</button>
+      <button class="filter-tab" data-filter="pension">Pension</button>
+      <button class="filter-tab" data-filter="child">Child</button>
+      <button class="filter-tab" data-filter="health">Health</button>
+    </div>
+    <div class="cards-grid plans-grid" id="plansGrid">
+      {% for pol in policies %}
+      <div class="plan-card" data-type="{{ pol.policy_type }}">
+        <div class="plan-card-header">
+          <div class="plan-icon">
+            {% if pol.policy_type == 'term' %}<i class="fas fa-umbrella"></i>
+            {% elif pol.policy_type == 'endowment' %}<i class="fas fa-coins"></i>
+            {% elif pol.policy_type == 'pension' %}<i class="fas fa-piggy-bank"></i>
+            {% elif pol.policy_type == 'child' %}<i class="fas fa-child"></i>
+            {% elif pol.policy_type == 'health' %}<i class="fas fa-heartbeat"></i>
+            {% else %}<i class="fas fa-shield-heart"></i>{% endif %}
+          </div>
+          <div class="plan-type-badge">{{ pol.policy_type | capitalize }}</div>
+        </div>
+        <div class="plan-code">{{ pol.policy_code }}</div>
+        <h3 class="plan-name">{{ pol.policy_name }}</h3>
+        <p class="plan-desc">{{ pol.description or '' }}</p>
+        {% if pol.benefits %}
+        <ul class="plan-benefits-list">
+          {% for b in (pol.benefits).split(',')[:3] %}
+            <li><i class="fas fa-check"></i> {{ b.strip() }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+        <div class="plan-details">
+          <div class="plan-detail">
+            <span>Coverage</span>
+            <strong>₹{{ "{:,.0f}".format(pol.coverage_amount) }}</strong>
+          </div>
+          <div class="plan-detail">
+            <span>Premium</span>
+            <strong>₹{{ "{:,.0f}".format(pol.premium_amount) }}/yr</strong>
+          </div>
+          <div class="plan-detail">
+            <span>Duration</span>
+            <strong>{{ pol.duration_years }} Yrs</strong>
+          </div>
+        </div>
+        <a href="{{ url_for('public.contact') }}" class="btn btn-plan">
+          Enquire Now <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <i class="fas fa-folder-open"></i>
+        <h3>No plans available</h3>
+        <p>Please check back soon.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block extra_js %}
+<script>
+// Plan filter
+document.querySelectorAll('.filter-tab').forEach(tab => {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    this.classList.add('active');
+    const filter = this.dataset.filter;
+    document.querySelectorAll('.plan-card').forEach(card => {
+      if (filter === 'all' || card.dataset.type === filter) {
+        card.style.display = '';
+        setTimeout(() => card.classList.add('visible'), 50);
+      } else {
+        card.style.display = 'none';
+        card.classList.remove('visible');
+      }
+    });
+  });
+});
+</script>
+{% endblock %}

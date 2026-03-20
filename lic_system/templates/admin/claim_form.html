@@ -1,0 +1,23 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ 'Edit' if claim else 'Add' }} Claim{% endblock %}
+{% block content %}
+<div class="page-header"><h1 class="page-title">{{ 'Edit Claim' if claim else 'Add New Claim' }}</h1><a href="{{ url_for('claims.index') }}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back</a></div>
+<form method="POST" enctype="multipart/form-data" class="form-card" novalidate>
+  <div class="form-section"><h4 class="form-section-title"><i class="fas fa-hand-holding-medical"></i> Claim Details</h4>
+    <div class="form-grid-2">
+      <div class="form-group"><label>Customer *</label><select name="customer_id" class="form-control" required><option value="">Select Customer...</option>{% for c in customers %}<option value="{{ c.id }}" {% if claim and claim.customer_id==c.id %}selected{% endif %}>{{ c.full_name }} ({{ c.customer_code }})</option>{% endfor %}</select></div>
+      <div class="form-group"><label>Policy *</label><select name="policy_id" class="form-control" required><option value="">Select Policy...</option>{% for p in policies %}<option value="{{ p.id }}" {% if claim and claim.policy_id==p.id %}selected{% endif %}>{{ p.policy_name }}</option>{% endfor %}</select></div>
+      <div class="form-group"><label>Claim Type *</label><select name="claim_type" class="form-control" required>{% for t in ['death','maturity','accident','health','vehicle'] %}<option value="{{ t }}" {% if claim and claim.claim_type==t %}selected{% endif %}>{{ t | title }}</option>{% endfor %}</select></div>
+      <div class="form-group"><label>Claim Amount (₹) *</label><input type="number" name="claim_amount" class="form-control" step="0.01" value="{{ claim.claim_amount if claim else '' }}" required/></div>
+      <div class="form-group"><label>Claim Date *</label><input type="date" name="claim_date" class="form-control" value="{{ claim.claim_date if claim and claim.claim_date else '' }}" required/></div>
+      <div class="form-group"><label>Incident Date</label><input type="date" name="incident_date" class="form-control" value="{{ claim.incident_date if claim and claim.incident_date else '' }}"/></div>
+      <div class="form-group"><label>Status</label><select name="status" class="form-control">{% for s in ['pending','under_review','approved','rejected'] %}<option value="{{ s }}" {% if claim and claim.status==s %}selected{% endif %}>{{ s | replace('_',' ') | title }}</option>{% endfor %}</select></div>
+      <div class="form-group"><label>Resolved Date</label><input type="date" name="resolved_date" class="form-control" value="{{ claim.resolved_date if claim and claim.resolved_date else '' }}"/></div>
+    </div>
+    <div class="form-group"><label>Incident Description</label><textarea name="incident_description" class="form-control" rows="3">{{ claim.incident_description if claim else '' }}</textarea></div>
+    <div class="form-group"><label>Remarks</label><textarea name="remarks" class="form-control" rows="2">{{ claim.remarks if claim else '' }}</textarea></div>
+    {% if not claim %}<div class="form-group"><label>Upload Document <small class="text-muted">(PDF/JPG/PNG, max 16MB)</small></label><input type="file" name="document" class="form-control" accept=".pdf,.jpg,.jpeg,.png"/></div>{% endif %}
+  </div>
+  <div class="form-actions"><a href="{{ url_for('claims.index') }}" class="btn btn-outline">Cancel</a><button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> {{ 'Update' if claim else 'Submit' }} Claim</button></div>
+</form>
+{% endblock %}

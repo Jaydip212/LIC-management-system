@@ -1,0 +1,111 @@
+{% extends "public/base.html" %}
+{% block title %}Contact Us – LIC Management System{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <div class="page-hero-content">
+      <span class="section-badge">Get In Touch</span>
+      <h1>Contact <span class="gradient-text">Our Team</span></h1>
+      <p>Have questions about our plans? Our experts are here to help — reach out through any channel.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="contact-grid">
+      <!-- Info -->
+      <div class="contact-info">
+        <h2>We're Here to Help</h2>
+        <p class="text-muted mb-32">Whether you're looking for a new policy, have a claim query, or just want advice — our certified team is ready.</p>
+        <div class="contact-cards">
+          <div class="contact-info-card">
+            <div class="ci-icon"><i class="fas fa-phone-alt"></i></div>
+            <div>
+              <h4>Call Us</h4>
+              <p>1800-222-4567 (Toll Free)</p>
+              <span>Mon–Sat, 9 AM – 6 PM</span>
+            </div>
+          </div>
+          <div class="contact-info-card">
+            <div class="ci-icon"><i class="fas fa-envelope"></i></div>
+            <div>
+              <h4>Email Us</h4>
+              <p>support@licms.in</p>
+              <span>Response within 24 hours</span>
+            </div>
+          </div>
+          <div class="contact-info-card">
+            <div class="ci-icon"><i class="fas fa-map-marker-alt"></i></div>
+            <div>
+              <h4>Head Office</h4>
+              <p>15th Floor, Fortune Tower, BKC</p>
+              <span>Mumbai, Maharashtra – 400051</span>
+            </div>
+          </div>
+          <div class="contact-info-card">
+            <div class="ci-icon"><i class="fas fa-clock"></i></div>
+            <div>
+              <h4>Working Hours</h4>
+              <p>Monday – Saturday</p>
+              <span>9:00 AM – 6:00 PM IST</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Form -->
+      <div class="contact-form-box">
+        <h3>Send Us a Message</h3>
+        <p class="text-muted">Fill out the form and our team will get back to you within one business day.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% for cat, msg in messages %}
+            <div class="alert alert-{{ cat }}">
+              <i class="fas fa-{% if cat=='success' %}check-circle{% else %}exclamation-circle{% endif %}"></i> {{ msg }}
+            </div>
+          {% endfor %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('public.contact') }}" class="contact-form" id="contactForm" novalidate>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name">Full Name *</label>
+              <input type="text" id="name" name="name" class="form-control" placeholder="Mayur Tawade" required minlength="3"/>
+              <span class="form-error" id="nameError"></span>
+            </div>
+            <div class="form-group">
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" name="phone" class="form-control" placeholder="+91 98765 43210" pattern="[0-9]{10,13}"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="email">Email Address *</label>
+            <input type="email" id="email" name="email" class="form-control" placeholder="mayur@example.com" required/>
+            <span class="form-error" id="emailError"></span>
+          </div>
+          <div class="form-group">
+            <label for="subject">Subject</label>
+            <select id="subject" name="subject" class="form-control">
+              <option value="">Select a topic...</option>
+              <option>Policy Enquiry</option>
+              <option>Premium Payment</option>
+              <option>Claim Assistance</option>
+              <option>Agent Contact</option>
+              <option>General Feedback</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="message">Your Message *</label>
+            <textarea id="message" name="message" class="form-control" rows="5" placeholder="Tell us how we can help you..." required minlength="20"></textarea>
+            <span class="form-error" id="msgError"></span>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full">
+            <i class="fas fa-paper-plane"></i> Send Message
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

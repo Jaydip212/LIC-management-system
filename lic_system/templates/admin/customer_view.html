@@ -1,0 +1,106 @@
+{% extends "admin/base.html" %}
+{% block title %}Customer – {{ customer.full_name }}{% endblock %}
+{% block breadcrumb %} / <a href="{{ url_for('customers.index') }}">Customers</a> / <span>{{ customer.full_name }}</span>{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">{{ customer.full_name }}</h1>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:6px">
+      <code class="code-badge">{{ customer.customer_code }}</code>
+      <span class="badge badge-{{ customer.status }}">{{ customer.status | title }}</span>
+    </div>
+  </div>
+  <div class="page-actions">
+    <a href="{{ url_for('customers.edit', cid=customer.id) }}" class="btn btn-primary"><i class="fas fa-edit"></i> Edit Customer</a>
+    <a href="{{ url_for('customers.index') }}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back</a>
+  </div>
+</div>
+
+<div class="dashboard-grid">
+  <!-- Personal Info Card -->
+  <div class="card">
+    <div class="card-header"><h3 class="card-title"><i class="fas fa-user"></i> Personal Information</h3></div>
+    <div class="card-body">
+      {% macro drow(label, value) %}<div class="detail-row"><span class="detail-label">{{ label }}</span><span class="detail-val">{{ value or '—' }}</span></div>{% endmacro %}
+      {{ drow('Full Name', customer.full_name) }}
+      {{ drow('Mobile', customer.mobile) }}
+      {{ drow('Email', customer.email) }}
+      {{ drow('Date of Birth', customer.date_of_birth.strftime('%d %b %Y') if customer.date_of_birth else None) }}
+      {{ drow('Gender', customer.gender | title if customer.gender else None) }}
+      {{ drow('Address', customer.address) }}
+      {{ drow('City', customer.city) }}
+      {{ drow('State', customer.state) }}
+      {{ drow('Pincode', customer.pincode) }}
+    </div>
+  </div>
+  <!-- Policy + Agent Info -->
+  <div class="card">
+    <div class="card-header"><h3 class="card-title"><i class="fas fa-file-shield"></i> Policy & Agent Details</h3></div>
+    <div class="card-body">
+      {% macro drow(label, value) %}<div class="detail-row"><span class="detail-label">{{ label }}</span><span class="detail-val">{{ value or '—' }}</span></div>{% endmacro %}
+      {{ drow('Policy', customer.policy_name) }}
+      {{ drow('Policy Type', customer.policy_type | capitalize if customer.policy_type else None) }}
+      {{ drow('Sum Assured', '₹' + '{:,.0f}'.format(customer.sum_assured) if customer.sum_assured else None) }}
+      {{ drow('Start Date', customer.policy_start_date.strftime('%d %b %Y') if customer.policy_start_date else None) }}
+      {{ drow('End Date', customer.policy_end_date.strftime('%d %b %Y') if customer.policy_end_date else None) }}
+      {{ drow('Assigned Agent', customer.agent_name) }}
+      {{ drow('Nominee', customer.nominee_name) }}
+      {{ drow('Nominee Relation', customer.nominee_relation) }}
+      {{ drow('Member Since', customer.created_at.strftime('%d %b %Y') if customer.created_at else None) }}
+    </div>
+  </div>
+
+  <!-- Recent Payments -->
+  <div class="card col-span-2">
+    <div class="card-header">
+      <h3 class="card-title"><i class="fas fa-credit-card"></i> Payment History</h3>
+      <a href="{{ url_for('payments.index') }}?q={{ customer.customer_code }}" class="card-link">View All</a>
+    </div>
+    <div class="card-body p-0">
+      <table class="table">
+        <thead><tr><th>Code</th><th>Amount</th><th>Due Date</th><th>Paid Date</th><th>Mode</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for p in payments %}
+          <tr>
+            <td><code class="code-badge">{{ p.payment_code }}</code></td>
+            <td>₹{{ '{:,.0f}'.format(p.amount) }}</td>
+            <td>{{ p.due_date.strftime('%d %b %Y') if p.due_date else '—' }}</td>
+            <td>{{ p.payment_date.strftime('%d %b %Y') if p.payment_date else '—' }}</td>
+            <td><span class="tag">{{ (p.payment_mode or '').upper() }}</span></td>
+            <td><span class="badge badge-{{ p.status }}">{{ p.status | title }}</span></td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" class="text-center text-muted">No payment records found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Recent Claims -->
+  <div class="card col-span-2">
+    <div class="card-header">
+      <h3 class="card-title"><i class="fas fa-hand-holding-medical"></i> Claims</h3>
+      <a href="{{ url_for('claims.index') }}?q={{ customer.customer_code }}" class="card-link">View All</a>
+    </div>
+    <div class="card-body p-0">
+      <table class="table">
+        <thead><tr><th>Code</th><th>Type</th><th>Amount</th><th>Claim Date</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for c in claims %}
+          <tr>
+            <td><code class="code-badge">{{ c.claim_code }}</code></td>
+            <td>{{ c.claim_type | title }}</td>
+            <td>₹{{ '{:,.0f}'.format(c.claim_amount) }}</td>
+            <td>{{ c.claim_date.strftime('%d %b %Y') if c.claim_date else '—' }}</td>
+            <td><span class="badge badge-{{ c.status }}">{{ c.status | replace('_', ' ') | title }}</span></td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5" class="text-center text-muted">No claims found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
