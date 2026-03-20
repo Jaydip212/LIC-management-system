@@ -7,6 +7,9 @@ from datetime import datetime, date
 from flask import Flask, render_template, redirect, url_for, request, \
     session, flash, jsonify
 import bcrypt
+from dotenv import load_dotenv
+# Load environment variables from .env file
+load_dotenv()
 from config import config
 
 
@@ -41,6 +44,8 @@ except OSError:
     pass # On read-only environments like Vercel, this will fail but shouldn't crash the app
 
 from extensions import mysql, login_required
+print(f" * Using MYSQL_USER: {app.config.get('MYSQL_USER')}")
+print(f" * Using MYSQL_HOST: {app.config.get('MYSQL_HOST')}")
 mysql.init_app(app)
 
 # ─── Helpers ────────────────────────────────────────────────────────────────

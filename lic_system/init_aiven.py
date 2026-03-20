@@ -1,6 +1,10 @@
 import pymysql
 import os
 import ssl
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Database configuration - Setup these environment variables locally before running
 # or replace with your Aiven details
@@ -9,7 +13,7 @@ user = os.environ.get('MYSQL_USER')
 password = os.environ.get('MYSQL_PASSWORD')
 db_name = os.environ.get('MYSQL_DB', 'defaultdb') # Aiven's default is usually defaultdb
 port = int(os.environ.get('MYSQL_PORT', 3306))
-ca_path = 'ca.pem' # Ensure ca.pem is in the same folder
+ca_path = os.path.join(os.path.dirname(__file__), 'ca.pem') # Ensure ca.pem is in the same folder
 
 print(f"Connecting to Aiven MySQL at {host}...")
 
