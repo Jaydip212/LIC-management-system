@@ -146,10 +146,25 @@ def server_error(e):
     error_info = traceback.format_exc()
     print(error_info)
     
+    # Diagnostic info
+    diag = f"""
+    --- DEBUG INFO ---
+    ABS PATH OF __FILE__: {os.path.abspath(__file__)}
+    CWD: {os.getcwd()}
+    TEMPLATE_DIR: {app.template_folder}
+    TEMPLATE_DIR EXISTS: {os.path.exists(app.template_folder) if app.template_folder else 'None'}
+    """
+    try:
+        if app.template_folder and os.path.exists(app.template_folder):
+            diag += f"\nCONTENTS OF TEMPLATE_DIR: {os.listdir(app.template_folder)}"
+        diag += f"\nROOT DIR CONTENTS: {os.listdir(os.path.dirname(os.path.abspath(__file__)))}"
+    except Exception as e:
+        diag += f"\nDIAG ERROR: {e}"
+
     try:
         return render_template('public/500.html'), 500
     except Exception as template_err:
-        return f"500 Internal Server Error<br><br>Original Error:<pre>{error_info}</pre><br>Template Error: {template_err}", 500
+        return f"500 Internal Server Error<br><br>Original Error:<pre>{error_info}</pre><br>Template Error: {template_err}<br><br><pre>{diag}</pre>", 500
 
 # ─── Run ────────────────────────────────────────────────────────────────────
 if __name__ == '__main__':
