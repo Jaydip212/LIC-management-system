@@ -20,16 +20,6 @@ static_dir   = os.path.join(os.path.dirname(__file__), 'static')
 
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 
-# DIAGNOSTIC: Print directory structure and template folder exists
-print(f" * ABS PATH OF __FILE__: {os.path.abspath(__file__)}")
-print(f" * TEMPLATE DIR PATH: {template_dir}")
-print(f" * TEMPLATE DIR EXISTS: {os.path.exists(template_dir)}")
-if os.path.exists(template_dir):
-    print(f" * TEMPLATE DIR CONTENTS: {os.listdir(template_dir)}")
-else:
-    print(f" * ROOT DIR CONTENTS: {os.listdir(os.path.dirname(os.path.abspath(__file__)))}")
-
-
 # Choose config based on environment
 if os.environ.get('VERCEL') or os.environ.get('FLASK_ENV') == 'production':
     app.config.from_object(config['production'])
@@ -51,16 +41,13 @@ if ca_content and os.environ.get('VERCEL'):
 try:
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 except OSError:
-    pass # On read-only environments like Vercel, this will fail but shouldn't crash the app
+    pass
 
 from extensions import mysql, login_required
-print(f" * Using MYSQL_USER: {app.config.get('MYSQL_USER')}")
-print(f" * Using MYSQL_HOST: {app.config.get('MYSQL_HOST')}")
 mysql.init_app(app)
 
 # ─── Helpers ────────────────────────────────────────────────────────────────
 def get_db():
-    from extensions import mysql
     cur = mysql.connection.cursor()
     return cur
 
@@ -146,25 +133,10 @@ def server_error(e):
     error_info = traceback.format_exc()
     print(error_info)
     
-    # Diagnostic info
-    diag = f"""
-    --- DEBUG INFO ---
-    ABS PATH OF __FILE__: {os.path.abspath(__file__)}
-    CWD: {os.getcwd()}
-    TEMPLATE_DIR: {app.template_folder}
-    TEMPLATE_DIR EXISTS: {os.path.exists(app.template_folder) if app.template_folder else 'None'}
-    """
-    try:
-        if app.template_folder and os.path.exists(app.template_folder):
-            diag += f"\nCONTENTS OF TEMPLATE_DIR: {os.listdir(app.template_folder)}"
-        diag += f"\nROOT DIR CONTENTS: {os.listdir(os.path.dirname(os.path.abspath(__file__)))}"
-    except Exception as e:
-        diag += f"\nDIAG ERROR: {e}"
-
     try:
         return render_template('main_site/500.html'), 500
     except Exception as template_err:
-        return f"500 Internal Server Error<br><br>Original Error:<pre>{error_info}</pre><br>Template Error: {template_err}<br><br><pre>{diag}</pre>", 500
+        return f"500 Internal Server Error<br><br>Original Error:<pre>{error_info}</pre><br>Template Error: {template_err}", 500
 
 # ─── Run ────────────────────────────────────────────────────────────────────
 if __name__ == '__main__':
