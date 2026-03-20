@@ -15,10 +15,20 @@ from config import config
 
 # ─── App Init ───────────────────────────────────────────────────────────────
 # Explicitly set paths for Vercel
-template_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
-static_dir   = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
+template_dir = os.path.join(os.path.dirname(__file__), 'templates')
+static_dir   = os.path.join(os.path.dirname(__file__), 'static')
 
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
+
+# DIAGNOSTIC: Print directory structure and template folder exists
+print(f" * ABS PATH OF __FILE__: {os.path.abspath(__file__)}")
+print(f" * TEMPLATE DIR PATH: {template_dir}")
+print(f" * TEMPLATE DIR EXISTS: {os.path.exists(template_dir)}")
+if os.path.exists(template_dir):
+    print(f" * TEMPLATE DIR CONTENTS: {os.listdir(template_dir)}")
+else:
+    print(f" * ROOT DIR CONTENTS: {os.listdir(os.path.dirname(os.path.abspath(__file__)))}")
+
 
 # Choose config based on environment
 if os.environ.get('VERCEL') or os.environ.get('FLASK_ENV') == 'production':
