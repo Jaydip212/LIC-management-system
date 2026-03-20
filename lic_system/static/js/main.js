@@ -63,34 +63,47 @@
   });
 
   /* ── Counter animation ─────────────────────────────────────── */
-  function animateCounter(el) {
-    const targetBigText = el.querySelector('.counter-num');
-    if (!targetBigText) return;
-    const text = targetBigText.textContent;
-    const suffix = el.querySelector('.counter-suffix');
-    const sfxText = suffix ? suffix.textContent.trim() : '';
-    const cleanNum = parseFloat(text.replace(/[^0-9.]/g, ''));
-    if (isNaN(cleanNum)) return;
+  function animateCounter(el, selector = '.counter-num') {
+    const target = el.querySelector(selector);
+    if (!target) return;
+    const countTo = parseFloat(target.dataset.count || target.textContent.replace(/[^0-9.]/g, ''));
+    if (isNaN(countTo)) return;
+    
     let start = 0;
     const duration = 2000;
     const step = timestamp => {
       if (!start) start = timestamp;
       const progress = Math.min((timestamp - start) / duration, 1);
       const ease = 1 - Math.pow(1 - progress, 3);
-      const current = Math.floor(ease * cleanNum);
-      targetBigText.textContent = current.toLocaleString('en-IN');
+      const current = Math.floor(ease * countTo);
+      target.textContent = current.toLocaleString('en-IN');
       if (progress < 1) requestAnimationFrame(step);
-      else targetBigText.textContent = cleanNum.toLocaleString('en-IN');
+      else target.textContent = countTo.toLocaleString('en-IN');
     };
     requestAnimationFrame(step);
   }
 
+  // Hero Stats
+  const heroStats = qs('.hero-stats');
+  if (heroStats) {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          qsa('.stat-item', heroStats).forEach(item => animateCounter(item, '.stat-num'));
+          io.disconnect();
+        }
+      });
+    }, { threshold: .1 });
+    io.observe(heroStats);
+  }
+
+  // Footer Counters
   const counterSection = qs('.counter-section');
   if (counterSection) {
     const io = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          qsa('.counter-item', counterSection).forEach(animateCounter);
+          qsa('.counter-item', counterSection).forEach(item => animateCounter(item, '.counter-num'));
           io.disconnect();
         }
       });

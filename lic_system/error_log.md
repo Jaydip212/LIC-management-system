@@ -26,6 +26,9 @@ This document logs the technical issues encountered and resolved during the proj
 - **Error**: `jinja2.exceptions.TemplateNotFound: public/index.html` on Vercel.
 - **Resolution**: Renamed `templates/public` to `templates/main_site` to avoid Vercel's special handling of the `public/` directory name. Updated all routing and template `extends`/`include` references.
 
-### 7. Vercel Entry Point
-- **Error**: Deployment issues or path resolution errors on Vercel.
-- **Resolution**: Created `index.py` as a standardized entry point for Vercel's `@vercel/python` builder.
+### 8. Hero Stats & Counters Animation (0 0 0 Issue)
+- **Error**: Hero section statistics (Policyholders, etc.) were stuck at `0`.
+- **Resolution**: Identified that `main.js` was only targeting the `.counter-section`. Updated the script to use `IntersectionObserver` for both `.hero-stats` and `.counter-section`, and correctly animate `.stat-num` elements.
+
+### 9. Sample Data Verification
+- **Status**: Verified that the Aiven database contains sample insurance policies. Users can now see active plans in the "Insurance Plans" section.
