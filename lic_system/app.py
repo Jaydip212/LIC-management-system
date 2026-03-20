@@ -3,12 +3,9 @@ LIC Management System - Main Flask Application
 """
 import os
 import math
-import pymysql
-pymysql.install_as_MySQLdb()          # use PyMySQL as the MySQL driver
 from datetime import datetime, date
 from flask import Flask, render_template, redirect, url_for, request, \
     session, flash, jsonify
-from flask_mysqldb import MySQL
 import bcrypt
 from config import config
 
@@ -25,7 +22,6 @@ mysql.init_app(app)
 
 # ─── Helpers ────────────────────────────────────────────────────────────────
 def get_db():
-    import MySQLdb
     from extensions import mysql
     cur = mysql.connection.cursor()
     return cur

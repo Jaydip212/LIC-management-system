@@ -3,7 +3,6 @@ Authentication routes – login / logout
 """
 from flask import Blueprint, render_template, redirect, url_for, \
     request, session, flash
-from flask_mysqldb import MySQL
 import bcrypt
 from datetime import datetime
 
