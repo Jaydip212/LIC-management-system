@@ -15,7 +15,10 @@ app = Flask(__name__)
 app.config.from_object(config['default'])
 
 # Ensure upload folder exists
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+try:
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+except OSError:
+    pass # On read-only environments like Vercel, this will fail but shouldn't crash the app
 
 from extensions import mysql, login_required
 mysql.init_app(app)
