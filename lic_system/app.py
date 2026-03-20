@@ -11,7 +11,11 @@ from config import config
 
 
 # ─── App Init ───────────────────────────────────────────────────────────────
-app = Flask(__name__)
+# Explicitly set paths for Vercel
+template_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
+static_dir   = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
+
+app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 
 # Choose config based on environment
 if os.environ.get('VERCEL') or os.environ.get('FLASK_ENV') == 'production':
@@ -22,10 +26,13 @@ else:
 # Handle SSL CA certificate from environment variable if on Vercel
 ca_content = os.environ.get('MYSQL_CA_CERT_CONTENT')
 if ca_content and os.environ.get('VERCEL'):
-    ca_path = os.path.join('/tmp', 'ca.pem')
-    with open(ca_path, 'w') as f:
-        f.write(ca_content)
-    app.config['MYSQL_CA_PATH'] = ca_path
+    try:
+        ca_path = os.path.join('/tmp', 'ca.pem')
+        with open(ca_path, 'w') as f:
+            f.write(ca_content)
+        app.config['MYSQL_CA_PATH'] = ca_path
+    except Exception as e:
+        print(f"Error writing CA cert: {e}")
 
 # Ensure upload folder exists
 try:
