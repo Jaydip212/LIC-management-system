@@ -90,6 +90,21 @@ from routes.messages   import messages_bp
 from routes.reports    import reports_bp
 from routes.public     import public_bp
 
+@app.route('/debug-paths')
+def debug_paths():
+    import os
+    res = {
+        'cwd': os.getcwd(),
+        'file': __file__,
+        'template_dir': app.template_folder,
+        'static_dir': app.static_folder,
+        'dir_contents': os.listdir(os.path.dirname(os.path.abspath(__file__))),
+        'templates_exists': os.path.exists(app.template_folder)
+    }
+    if res['templates_exists']:
+        res['templates_internal'] = os.listdir(app.template_folder)
+    return jsonify(res)
+
 app.register_blueprint(auth_bp)
 app.register_blueprint(dashboard_bp)
 app.register_blueprint(customers_bp)
