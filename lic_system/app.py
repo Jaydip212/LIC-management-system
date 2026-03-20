@@ -119,11 +119,22 @@ app.register_blueprint(public_bp)
 # ─── Error Handlers ─────────────────────────────────────────────────────────
 @app.errorhandler(404)
 def not_found(e):
-    return render_template('public/404.html'), 404
+    try:
+        return render_template('public/404.html'), 404
+    except Exception:
+        return "404 Not Found", 404
 
 @app.errorhandler(500)
 def server_error(e):
-    return render_template('public/500.html'), 500
+    # Log the original error
+    import traceback
+    error_info = traceback.format_exc()
+    print(error_info)
+    
+    try:
+        return render_template('public/500.html'), 500
+    except Exception as template_err:
+        return f"500 Internal Server Error<br><br>Original Error:<pre>{error_info}</pre><br>Template Error: {template_err}", 500
 
 # ─── Run ────────────────────────────────────────────────────────────────────
 if __name__ == '__main__':
